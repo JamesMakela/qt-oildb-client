@@ -15,6 +15,7 @@
 #include <QJsonObject>
 #include <QTableWidget>
 
+
 OilDatabaseMainWindow::OilDatabaseMainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::OilDatabaseMainWindow)
@@ -40,7 +41,7 @@ void OilDatabaseMainWindow::on_requestButton_clicked()
     QUrl url = QUrl("https://adios-stage.orr.noaa.gov/api/oils");
 
     QUrlQuery query = QUrlQuery();
-    query.addQueryItem(QString("limit"), QString("20"));
+    query.addQueryItem(QString("limit"), QString("100"));
 
     url.setQuery(query);
 
@@ -86,21 +87,32 @@ void OilDatabaseMainWindow::replyFinished(QNetworkReply* reply) {
 
             for (auto idx{0}; idx < data.size(); ++idx) {
                 QJsonValue item = data[idx];
-                qDebug() << "item id: " << item["_id"]
-                         << ", item name: " << item["attributes"]["metadata"]["name"];
-
                 QString id = item["_id"].toString();
-                QString name = item["attributes"]["metadata"]["name"].toString();
-                QJsonArray status = item["status"].toArray();
+                QJsonValue attrs = item["attributes"];
 
+                QString name = attrs["metadata"]["name"].toString();
+                QJsonArray status = attrs["status"].toArray();
 
-                QLabel *myLabel = new QLabel();
+                qDebug() << "item " << idx << ": id = " << id << ", item name = " << name;
+
                 QPixmap img;
 
-                img = QPixmap( ":/image/Good.png" );
+                switch (determine_status(status)) {
+                case OilStatus::good:
+                    img = QPixmap( ":/image/Good.png" );
+                    break;
+                case OilStatus::warning:
+                    img = QPixmap( ":/image/Warning.png" );
+                    break;
+                default:
+                    img = QPixmap( ":/image/Error.png" );
+                    break;
+                }
 
-                img.setDevicePixelRatio(2.0);
-                myLabel->setAlignment(Qt::AlignHCenter);
+                img.setDevicePixelRatio(2.5);
+
+                QLabel *myLabel = new QLabel();
+                myLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
                 myLabel->setPixmap(img);
 
                 ui->queryResults->setCellWidget(idx, 0, myLabel);
@@ -117,3 +129,43 @@ void OilDatabaseMainWindow::replyFinished(QNetworkReply* reply) {
     reply->deleteLater();
     std::cout << "reply finished.";
 }
+
+
+OilStatus OilDatabaseMainWindow::determine_status(const QJsonArray &jsonStatus) {
+    if (jsonStatus.size() == 0) {
+        return OilStatus::good;
+    }
+
+    auto begin{ jsonStatus.begin() };
+    auto end{ jsonStatus.end() };
+
+    for (auto p{ begin }; p != end; ++p) {
+        QString msg = p->toString();
+
+        if (msg.startsWith(QString("E"))) {
+            return OilStatus::error;
+        }
+    }
+
+    return OilStatus::warning;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -5,6 +5,13 @@
 
 #include <QtNetwork/QNetworkAccessManager>
 
+enum class OilStatus
+{
+    good,
+    warning,
+    error
+};
+
 namespace Ui {
 class OilDatabaseMainWindow;
 }
@@ -24,6 +31,8 @@ private slots:
 private:
     Ui::OilDatabaseMainWindow *ui;
     QNetworkAccessManager *manager;
+
+    OilStatus determine_status(const QJsonArray &jsonStatus);
 };
 
 #endif // OILDATABASEMAINWINDOW_H
