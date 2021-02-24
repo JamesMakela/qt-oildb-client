@@ -7,59 +7,50 @@
     <x>0</x>
     <y>0</y>
     <width>639</width>
-    <height>393</height>
+    <height>427</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>OilDatabaseMainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QPushButton" name="requestButton">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>121</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Send Request</string>
-    </property>
-   </widget>
-   <widget class="QPlainTextEdit" name="jsonResponse">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>50</y>
-      <width>621</width>
-      <height>171</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QTableWidget" name="queryResults">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>230</y>
-      <width>621</width>
-      <height>192</height>
-     </rect>
-    </property>
-    <property name="columnCount">
-     <number>2</number>
-    </property>
-    <column>
-     <property name="text">
-      <string>ID</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>Name</string>
-     </property>
-    </column>
-   </widget>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout"/>
+    </item>
+    <item>
+     <widget class="QPushButton" name="requestButton">
+      <property name="text">
+       <string>Send Request</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTableWidget" name="queryResults">
+      <property name="columnCount">
+       <number>3</number>
+      </property>
+      <column>
+       <property name="text">
+        <string>Status</string>
+       </property>
+       <property name="textAlignment">
+        <set>AlignCenter</set>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>ID</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Name</string>
+       </property>
+      </column>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

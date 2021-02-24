@@ -3,6 +3,7 @@
 
 #include <iostream>
 
+#include <QLabel>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QUrlQuery>
@@ -19,7 +20,8 @@ OilDatabaseMainWindow::OilDatabaseMainWindow(QWidget *parent) :
     ui(new Ui::OilDatabaseMainWindow)
 {
     ui->setupUi(this);
-    ui->queryResults->setColumnWidth(1, 300);
+    ui->queryResults->setColumnWidth(0, 64);
+    ui->queryResults->setColumnWidth(2, 300);
 
     manager = new QNetworkAccessManager(this);
 
@@ -53,7 +55,6 @@ void OilDatabaseMainWindow::replyFinished(QNetworkReply* reply) {
     }
     else {
         QByteArray responseBody = reply->readAll();
-        ui->jsonResponse->setPlainText(responseBody);  // just to see what we got
 
         QJsonParseError error;
         QJsonDocument responseJson = QJsonDocument::fromJson(responseBody, &error);
@@ -90,12 +91,25 @@ void OilDatabaseMainWindow::replyFinished(QNetworkReply* reply) {
 
                 QString id = item["_id"].toString();
                 QString name = item["attributes"]["metadata"]["name"].toString();
+                QJsonArray status = item["status"].toArray();
+
+
+                QLabel *myLabel = new QLabel();
+                QPixmap img;
+
+                img = QPixmap( ":/image/Good.png" );
+
+                img.setDevicePixelRatio(2.0);
+                myLabel->setAlignment(Qt::AlignHCenter);
+                myLabel->setPixmap(img);
+
+                ui->queryResults->setCellWidget(idx, 0, myLabel);
 
                 QTableWidgetItem *newItem = new QTableWidgetItem(id);
-                ui->queryResults->setItem(idx, 0, newItem);
+                ui->queryResults->setItem(idx, 1, newItem);
 
                 newItem = new QTableWidgetItem(name);
-                ui->queryResults->setItem(idx, 1, newItem);
+                ui->queryResults->setItem(idx, 2, newItem);
             }
         }
     }
