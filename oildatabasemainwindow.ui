@@ -19,10 +19,163 @@
      <layout class="QVBoxLayout" name="verticalLayout"/>
     </item>
     <item>
-     <widget class="QPushButton" name="requestButton">
-      <property name="text">
-       <string>Send Request</string>
+     <widget class="QGroupBox" name="querySelectionGroup">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>170</height>
+       </size>
       </property>
+      <property name="title">
+       <string/>
+      </property>
+      <widget class="QPushButton" name="requestButton">
+       <property name="geometry">
+        <rect>
+         <x>250</x>
+         <y>130</y>
+         <width>121</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Send Request</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="queryText">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>271</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="placeholderText">
+        <string>Search ID, Name, or Location</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="labelAPI">
+       <property name="geometry">
+        <rect>
+         <x>300</x>
+         <y>10</y>
+         <width>51</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="text">
+        <string>API</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QDoubleSpinBox" name="apiMinValue">
+       <property name="geometry">
+        <rect>
+         <x>360</x>
+         <y>10</y>
+         <width>71</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>Minimum API value</string>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+      </widget>
+      <widget class="QDoubleSpinBox" name="apiMaxValue">
+       <property name="geometry">
+        <rect>
+         <x>440</x>
+         <y>10</y>
+         <width>71</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>Maximum API Value</string>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>100.000000000000000</double>
+       </property>
+      </widget>
+      <widget class="QLabel" name="labelOilType">
+       <property name="geometry">
+        <rect>
+         <x>300</x>
+         <y>50</y>
+         <width>51</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Type</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QListView" name="oilTypeListView">
+       <property name="geometry">
+        <rect>
+         <x>360</x>
+         <y>50</y>
+         <width>256</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>Search only oils of a selected type</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="labelOilLabels">
+       <property name="geometry">
+        <rect>
+         <x>300</x>
+         <y>90</y>
+         <width>51</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Labels</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+      <widget class="QListView" name="oilLabelListView">
+       <property name="geometry">
+        <rect>
+         <x>360</x>
+         <y>90</y>
+         <width>256</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>Search only oils that are labelled with one of the selected labels</string>
+       </property>
+      </widget>
      </widget>
     </item>
     <item>
