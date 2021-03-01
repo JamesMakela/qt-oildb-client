@@ -27,8 +27,6 @@ private:
     Ui::OilDatabaseMainWindow *ui;
     QNetworkAccessManager *manager;
     QueryResultModel *model;
-
-    QPixmap get_status_img(OilStatus status);
 };
 
 #endif // OILDATABASEMAINWINDOW_H

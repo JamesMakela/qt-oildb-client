@@ -23,8 +23,6 @@ OilDatabaseMainWindow::OilDatabaseMainWindow(QWidget *parent) :
     ui(new Ui::OilDatabaseMainWindow)
 {
     ui->setupUi(this);
-    ui->queryResults->setColumnWidth(0, 64);
-    ui->queryResults->setColumnWidth(2, 300);
 
     model = new QueryResultModel(this);
     ui->queryResultsView->setModel(model);
@@ -50,6 +48,8 @@ OilDatabaseMainWindow::~OilDatabaseMainWindow()
 
 void OilDatabaseMainWindow::on_requestButton_clicked()
 {
+    model->removeRows(0, model->rowCount(), QModelIndex());
+
     QUrl url = QUrl("https://adios-stage.orr.noaa.gov/api/oils");
 
     QUrlQuery query = QUrlQuery();
@@ -67,10 +67,9 @@ void OilDatabaseMainWindow::replyFinished(QNetworkReply* reply) {
         return;
     }
     else {
-        QByteArray responseBody = reply->readAll();
-
         QJsonParseError error;
-        QJsonDocument responseJson = QJsonDocument::fromJson(responseBody, &error);
+        QJsonDocument responseJson = QJsonDocument::fromJson(reply->readAll(),
+                                                             &error);
 
         if (responseJson.isNull()) {
             qDebug() << "Null JSON response: " << error.errorString();
@@ -87,33 +86,8 @@ void OilDatabaseMainWindow::replyFinished(QNetworkReply* reply) {
         else if (responseJson.isObject()) {
             QJsonArray data = responseJson.object()[QString("data")].toArray();
 
-            QTableWidget *queryTable = ui->queryResults;
-            qDebug() << "Initial table row count: " << queryTable->rowCount();
-
-            queryTable->setRowCount(queryTable->rowCount() + data.size());
-
-            for (int x{ 0 }, y{ 9 }; x < 10; ++x, --y)
-                    std::cout << x << ' ' << y << '\n';
-
             for (auto idx{0}; idx < data.size(); ++idx) {
-                QueryResult item{data[idx]};
-
-                QLabel *myLabel = new QLabel();
-                myLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-                myLabel->setPixmap(get_status_img(item.status));
-
-                ui->queryResults->setCellWidget(idx, 0, myLabel);
-
-                QTableWidgetItem *newItem = new QTableWidgetItem(item.oil_id);
-                ui->queryResults->setItem(idx, 1, newItem);
-
-                newItem = new QTableWidgetItem(item.name);
-                ui->queryResults->setItem(idx, 2, newItem);
-
-                // Todo: If you want a table that uses your own data model you
-                // should use QTableView instead.  Here we use a model, and
-                // the TableView should automatically be updated.
-                model->appendQueryResult(item);
+                model->appendQueryResult(QueryResult{data[idx]});
             }
         }
     }
@@ -121,43 +95,6 @@ void OilDatabaseMainWindow::replyFinished(QNetworkReply* reply) {
     reply->deleteLater();
     std::cout << "reply finished.";
 }
-
-QPixmap OilDatabaseMainWindow::get_status_img(OilStatus status) {
-    QPixmap img;
-
-    switch (status) {
-    case OilStatus::good:
-        img = QPixmap( ":/image/Good.png" );
-        break;
-    case OilStatus::warning:
-        img = QPixmap( ":/image/Warning.png" );
-        break;
-    default:
-        img = QPixmap( ":/image/Error.png" );
-        break;
-    }
-
-    img.setDevicePixelRatio(2.5);
-
-    return img;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -26,31 +26,6 @@
      </widget>
     </item>
     <item>
-     <widget class="QTableWidget" name="queryResults">
-      <property name="columnCount">
-       <number>3</number>
-      </property>
-      <column>
-       <property name="text">
-        <string>Status</string>
-       </property>
-       <property name="textAlignment">
-        <set>AlignCenter</set>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>ID</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Name</string>
-       </property>
-      </column>
-     </widget>
-    </item>
-    <item>
      <widget class="QTableView" name="queryResultsView">
       <attribute name="verticalHeaderVisible">
        <bool>false</bool>
