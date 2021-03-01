@@ -1,16 +1,11 @@
 #ifndef OILDATABASEMAINWINDOW_H
 #define OILDATABASEMAINWINDOW_H
 
+#include "queryresultmodel.h"
+
 #include <QMainWindow>
 
 #include <QtNetwork/QNetworkAccessManager>
-
-enum class OilStatus
-{
-    good,
-    warning,
-    error
-};
 
 namespace Ui {
 class OilDatabaseMainWindow;
@@ -31,8 +26,9 @@ private slots:
 private:
     Ui::OilDatabaseMainWindow *ui;
     QNetworkAccessManager *manager;
+    QueryResultModel *model;
 
-    OilStatus determine_status(const QJsonArray &jsonStatus);
+    QPixmap get_status_img(OilStatus status);
 };
 
 #endif // OILDATABASEMAINWINDOW_H

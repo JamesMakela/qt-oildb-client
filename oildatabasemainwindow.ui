@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>639</width>
-    <height>427</height>
+    <height>520</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -48,6 +48,13 @@
         <string>Name</string>
        </property>
       </column>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTableView" name="queryResultsView">
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
      </widget>
     </item>
    </layout>

@@ -1,5 +1,7 @@
 #include "oildatabasemainwindow.h"
 #include "ui_oildatabasemainwindow.h"
+#include "queryresultmodel.h"
+#include "queryresultsdelegate.h"
 
 #include <iostream>
 
@@ -24,6 +26,15 @@ OilDatabaseMainWindow::OilDatabaseMainWindow(QWidget *parent) :
     ui->queryResults->setColumnWidth(0, 64);
     ui->queryResults->setColumnWidth(2, 300);
 
+    model = new QueryResultModel(this);
+    ui->queryResultsView->setModel(model);
+    ui->queryResultsView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->queryResultsView->horizontalHeader()->setStretchLastSection(true);
+    ui->queryResultsView->verticalHeader()->hide();
+    ui->queryResultsView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->queryResultsView->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->queryResultsView->setItemDelegate(new QueryResultsDelegate);
+
     manager = new QNetworkAccessManager(this);
 
     connect(manager, SIGNAL(finished(QNetworkReply*)), this,
@@ -34,6 +45,7 @@ OilDatabaseMainWindow::~OilDatabaseMainWindow()
 {
     delete ui;
     delete manager;
+    delete model;
 }
 
 void OilDatabaseMainWindow::on_requestButton_clicked()
@@ -75,8 +87,6 @@ void OilDatabaseMainWindow::replyFinished(QNetworkReply* reply) {
         else if (responseJson.isObject()) {
             QJsonArray data = responseJson.object()[QString("data")].toArray();
 
-            // Todo: If you want a table that uses your own data model you
-            // should use QTableView rather than this class
             QTableWidget *queryTable = ui->queryResults;
             qDebug() << "Initial table row count: " << queryTable->rowCount();
 
@@ -86,42 +96,24 @@ void OilDatabaseMainWindow::replyFinished(QNetworkReply* reply) {
                     std::cout << x << ' ' << y << '\n';
 
             for (auto idx{0}; idx < data.size(); ++idx) {
-                QJsonValue item = data[idx];
-                QString id = item["_id"].toString();
-                QJsonValue attrs = item["attributes"];
-
-                QString name = attrs["metadata"]["name"].toString();
-                QJsonArray status = attrs["status"].toArray();
-
-                qDebug() << "item " << idx << ": id = " << id << ", item name = " << name;
-
-                QPixmap img;
-
-                switch (determine_status(status)) {
-                case OilStatus::good:
-                    img = QPixmap( ":/image/Good.png" );
-                    break;
-                case OilStatus::warning:
-                    img = QPixmap( ":/image/Warning.png" );
-                    break;
-                default:
-                    img = QPixmap( ":/image/Error.png" );
-                    break;
-                }
-
-                img.setDevicePixelRatio(2.5);
+                QueryResult item{data[idx]};
 
                 QLabel *myLabel = new QLabel();
                 myLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-                myLabel->setPixmap(img);
+                myLabel->setPixmap(get_status_img(item.status));
 
                 ui->queryResults->setCellWidget(idx, 0, myLabel);
 
-                QTableWidgetItem *newItem = new QTableWidgetItem(id);
+                QTableWidgetItem *newItem = new QTableWidgetItem(item.oil_id);
                 ui->queryResults->setItem(idx, 1, newItem);
 
-                newItem = new QTableWidgetItem(name);
+                newItem = new QTableWidgetItem(item.name);
                 ui->queryResults->setItem(idx, 2, newItem);
+
+                // Todo: If you want a table that uses your own data model you
+                // should use QTableView instead.  Here we use a model, and
+                // the TableView should automatically be updated.
+                model->appendQueryResult(item);
             }
         }
     }
@@ -130,25 +122,27 @@ void OilDatabaseMainWindow::replyFinished(QNetworkReply* reply) {
     std::cout << "reply finished.";
 }
 
+QPixmap OilDatabaseMainWindow::get_status_img(OilStatus status) {
+    QPixmap img;
 
-OilStatus OilDatabaseMainWindow::determine_status(const QJsonArray &jsonStatus) {
-    if (jsonStatus.size() == 0) {
-        return OilStatus::good;
+    switch (status) {
+    case OilStatus::good:
+        img = QPixmap( ":/image/Good.png" );
+        break;
+    case OilStatus::warning:
+        img = QPixmap( ":/image/Warning.png" );
+        break;
+    default:
+        img = QPixmap( ":/image/Error.png" );
+        break;
     }
 
-    auto begin{ jsonStatus.begin() };
-    auto end{ jsonStatus.end() };
+    img.setDevicePixelRatio(2.5);
 
-    for (auto p{ begin }; p != end; ++p) {
-        QString msg = p->toString();
-
-        if (msg.startsWith(QString("E"))) {
-            return OilStatus::error;
-        }
-    }
-
-    return OilStatus::warning;
+    return img;
 }
+
+
 
 
 

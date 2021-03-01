@@ -26,10 +26,14 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        oildatabasemainwindow.cpp
+        oildatabasemainwindow.cpp \
+        queryresultmodel.cpp \
+    queryresultsdelegate.cpp
 
 HEADERS += \
-        oildatabasemainwindow.h
+        oildatabasemainwindow.h \
+        queryresultmodel.h \
+    queryresultsdelegate.h
 
 FORMS += \
         oildatabasemainwindow.ui
