@@ -33,6 +33,8 @@ OilDatabaseMainWindow::OilDatabaseMainWindow(QWidget *parent) :
     ui->queryResultsView->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->queryResultsView->setItemDelegate(new QueryResultsDelegate);
 
+    queryUrl = new AdiosApiQueryUrl("https://adios-stage.orr.noaa.gov/api/oils");
+
     manager = new QNetworkAccessManager(this);
 
     connect(manager, SIGNAL(finished(QNetworkReply*)), this,
@@ -49,16 +51,7 @@ OilDatabaseMainWindow::~OilDatabaseMainWindow()
 void OilDatabaseMainWindow::on_requestButton_clicked()
 {
     model->removeRows(0, model->rowCount(), QModelIndex());
-
-    QUrl url = QUrl("https://adios-stage.orr.noaa.gov/api/oils");
-
-    QUrlQuery query = QUrlQuery();
-    query.addQueryItem(QString("limit"), QString("100"));
-
-    url.setQuery(query);
-
-    manager->get(QNetworkRequest(url));
-    std::cout << "get the request.";
+    manager->get(QNetworkRequest(queryUrl->url()));
 }
 
 void OilDatabaseMainWindow::replyFinished(QNetworkReply* reply) {
@@ -96,7 +89,19 @@ void OilDatabaseMainWindow::replyFinished(QNetworkReply* reply) {
     std::cout << "reply finished.";
 }
 
+void OilDatabaseMainWindow::on_queryText_textChanged(const QString &text) {
+    qDebug() << ">> on_queryText_textChanged(): " << text;
+    queryUrl->setQueryText(text);
+}
 
+void OilDatabaseMainWindow::on_apiMinValue_valueChanged(double minApi)
+{
+    qDebug() << ">> on_apiMinValue_valueChanged(): " << minApi;
+    queryUrl->setMinApi(minApi);
+}
 
-
-
+void OilDatabaseMainWindow::on_apiMaxValue_valueChanged(double maxApi)
+{
+    qDebug() << ">> on_apiMaxValue_valueChanged(): " << maxApi;
+    queryUrl->setMaxApi(maxApi);
+}
