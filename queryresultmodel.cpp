@@ -46,7 +46,7 @@ QueryResultModel::QueryResultModel(QObject *parent)
     : QAbstractTableModel{parent}
 {}
 
-QueryResultModel::QueryResultModel(QList<QueryResult> results, QObject *parent)
+QueryResultModel::QueryResultModel(QList<QueryResult> &results, QObject *parent)
     : QAbstractTableModel{parent}, results{results}
 {}
 
@@ -145,6 +145,17 @@ bool QueryResultModel::insertRows(int row, int count, const QModelIndex &parent)
     return true;
 }
 
+bool QueryResultModel::removeRows(int row, int count, const QModelIndex &parent)
+{
+    beginRemoveRows(parent, row, row + count - 1);
+
+    for (int i = 0; i < count; ++i)
+        results.removeAt(row);
+
+    endRemoveRows();
+    return true;
+}
+
 bool QueryResultModel::appendQueryResult(const QueryResult &result)
 {
     int endOfList = rowCount();
@@ -162,16 +173,5 @@ bool QueryResultModel::appendQueryResult(const QueryResult &result)
     idx = index(endOfList, 2, QModelIndex());
     setData(idx, result.name, Qt::EditRole);
 
-    return true;
-}
-
-bool QueryResultModel::removeRows(int row, int count, const QModelIndex &parent)
-{
-    beginRemoveRows(parent, row, row + count - 1);
-
-    for (int i = 0; i < count; ++i)
-        results.removeAt(row);
-
-    endRemoveRows();
     return true;
 }

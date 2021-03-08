@@ -48,10 +48,11 @@ class QueryResultModel : public QAbstractTableModel
 
 public:
     explicit QueryResultModel(QObject *parent = nullptr);
-    QueryResultModel(QList<QueryResult> results, QObject *parent = nullptr);
+    QueryResultModel(QList<QueryResult> &results, QObject *parent = nullptr);
 
     // Header:
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+    QVariant headerData(int section, Qt::Orientation orientation,
+                        int role = Qt::DisplayRole) const override;
 
     // Basic functionality:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -60,12 +61,11 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     bool setData(const QModelIndex &index, const QVariant &value, int role) override;
 
-    // Add data:
+    // Add/remove data:
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
-    bool appendQueryResult(const QueryResult &result);
-
-    // Remove data:
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+
+    bool appendQueryResult(const QueryResult &result);
 
 private:
     QList<QueryResult> results;

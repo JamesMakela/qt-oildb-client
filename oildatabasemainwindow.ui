@@ -146,6 +146,9 @@
        <property name="toolTip">
         <string>Search only oils of a selected type</string>
        </property>
+       <property name="selectionRectVisible">
+        <bool>true</bool>
+       </property>
       </widget>
       <widget class="QLabel" name="labelOilLabels">
        <property name="geometry">
@@ -174,6 +177,9 @@
        </property>
        <property name="toolTip">
         <string>Search only oils that are labelled with one of the selected labels</string>
+       </property>
+       <property name="selectionRectVisible">
+        <bool>true</bool>
        </property>
       </widget>
      </widget>

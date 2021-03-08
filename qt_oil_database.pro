@@ -29,13 +29,15 @@ SOURCES += \
         oildatabasemainwindow.cpp \
         queryresultmodel.cpp \
         queryresultsdelegate.cpp \
-        adiosapiqueryurl.cpp
+        adiosapiqueryurl.cpp \
+        producttypemodel.cpp
 
 HEADERS += \
         oildatabasemainwindow.h \
         queryresultmodel.h \
         queryresultsdelegate.h \
-        adiosapiqueryurl.h
+        adiosapiqueryurl.h \
+        producttypemodel.h
 
 FORMS += \
         oildatabasemainwindow.ui

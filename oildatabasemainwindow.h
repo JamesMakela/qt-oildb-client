@@ -2,11 +2,25 @@
 #define OILDATABASEMAINWINDOW_H
 
 #include "queryresultmodel.h"
+#include "producttypemodel.h"
 #include "adiosapiqueryurl.h"
 
 #include <QMainWindow>
 
 #include <QtNetwork/QNetworkAccessManager>
+
+
+enum class NetworkReplyType
+{
+    oil,
+    oilItem,
+    label,
+    labelItem,
+    productType,
+    productTypeItem,
+    unknown
+};
+
 
 namespace Ui {
 class OilDatabaseMainWindow;
@@ -19,6 +33,10 @@ class OilDatabaseMainWindow : public QMainWindow
 public:
     explicit OilDatabaseMainWindow(QWidget *parent = nullptr);
     ~OilDatabaseMainWindow();
+    void setupListControls();
+    NetworkReplyType getNetworkReplyType(QNetworkReply *reply);
+    void handleOilReply(QNetworkReply *reply);
+    void handleProductTypeReply(QNetworkReply *reply);
 
 private slots:
     void on_requestButton_clicked();
@@ -27,10 +45,14 @@ private slots:
     void on_apiMinValue_valueChanged(double arg1);
     void on_apiMaxValue_valueChanged(double arg1);
 
+    void on_oilTypeListView_clicked(const QModelIndex &index);
+
 private:
     Ui::OilDatabaseMainWindow *ui;
     QNetworkAccessManager *manager;
-    QueryResultModel *model;
+    QueryResultModel *queryModel;
+    ProductTypeModel *productTypeModel;
+
     AdiosApiQueryUrl *queryUrl;
 };
 
