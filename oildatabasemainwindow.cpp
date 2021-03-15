@@ -1,13 +1,16 @@
 #include "oildatabasemainwindow.h"
 #include "ui_oildatabasemainwindow.h"
+#include "networkerrordialog.h"
 #include "queryresultmodel.h"
 #include "producttypemodel.h"
 #include "queryresultsdelegate.h"
+#include "routing.h"
 
 #include <iostream>
 
 #include <QLabel>
 #include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkConfiguration>
 #include <QNetworkReply>
 #include <QUrlQuery>
 
@@ -40,6 +43,8 @@ OilDatabaseMainWindow::OilDatabaseMainWindow(QWidget *parent) :
     queryUrl = new AdiosApiQueryUrl("https://adios-stage.orr.noaa.gov/api/oils/");
 
     manager = new QNetworkAccessManager(this);
+    QNetworkConfiguration config = manager->configuration();
+    config.setConnectTimeout(5000);
 
     connect(manager, SIGNAL(finished(QNetworkReply*)), this,
             SLOT(replyFinished(QNetworkReply*)));
@@ -62,30 +67,13 @@ void OilDatabaseMainWindow::setupListControls() {
 }
 
 
-NetworkReplyType OilDatabaseMainWindow::getNetworkReplyType(QNetworkReply* reply)
-{
-    QStringList pathParts = (reply->request().url().path()
-                             .split('/', QString::SkipEmptyParts));
-
-    if (pathParts.last() == "oils") {
-        return NetworkReplyType::oil;
-    }
-    else if (pathParts.last() == "labels") {
-        return NetworkReplyType::label;
-    }
-    else if (pathParts.last() == "product-types") {
-        return NetworkReplyType::productType;
-    }
-    else {
-        return NetworkReplyType::unknown;
-    }
-    // we will get more sophisticated later
-}
-
-
 void OilDatabaseMainWindow::on_requestButton_clicked()
 {
     queryModel->removeRows(0, queryModel->rowCount(), QModelIndex());
+
+    // in Qt 5.15, we have a nice convenience function setTransferTimeout(),
+    // but we are not there yet, currently at 5.11.  So instead, we set the
+    // timeout in the configuration of the NetworkAccessManager.
 
     QNetworkRequest req = QNetworkRequest(queryUrl->url());
     //req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -96,6 +84,9 @@ void OilDatabaseMainWindow::on_requestButton_clicked()
 void OilDatabaseMainWindow::replyFinished(QNetworkReply* reply) {
     if (reply->error()) {
         qDebug() << "Error in network reply: " << reply->errorString();
+        NetworkErrorDialog *errorDialog = new NetworkErrorDialog(this, Routing::getNetworkReplyType(reply));
+        errorDialog->exec();
+        delete errorDialog;
         return;
     }
     else {
@@ -103,7 +94,7 @@ void OilDatabaseMainWindow::replyFinished(QNetworkReply* reply) {
         QStringList pathParts = (reply->request().url().path()
                                  .split('/', QString::SkipEmptyParts));
 
-        switch(getNetworkReplyType(reply)) {
+        switch(Routing::getNetworkReplyType(reply)) {
         case NetworkReplyType::oil:
             qDebug() << "Network Reply Type: oil";
             handleOilReply(reply);
@@ -195,6 +186,5 @@ void OilDatabaseMainWindow::on_apiMaxValue_valueChanged(double maxApi)
 
 void OilDatabaseMainWindow::on_oilTypeListView_clicked(const QModelIndex &index)
 {
-    qDebug() << ">> on_oilTypeListView_clicked(): " << index;
     queryUrl->setQueryType(productTypeModel->data(index).toString());
 }

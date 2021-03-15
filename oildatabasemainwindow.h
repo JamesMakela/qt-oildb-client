@@ -10,18 +10,6 @@
 #include <QtNetwork/QNetworkAccessManager>
 
 
-enum class NetworkReplyType
-{
-    oil,
-    oilItem,
-    label,
-    labelItem,
-    productType,
-    productTypeItem,
-    unknown
-};
-
-
 namespace Ui {
 class OilDatabaseMainWindow;
 }
@@ -34,7 +22,6 @@ public:
     explicit OilDatabaseMainWindow(QWidget *parent = nullptr);
     ~OilDatabaseMainWindow();
     void setupListControls();
-    NetworkReplyType getNetworkReplyType(QNetworkReply *reply);
     void handleOilReply(QNetworkReply *reply);
     void handleProductTypeReply(QNetworkReply *reply);
 

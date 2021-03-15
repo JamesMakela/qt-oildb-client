@@ -30,17 +30,22 @@ SOURCES += \
         queryresultmodel.cpp \
         queryresultsdelegate.cpp \
         adiosapiqueryurl.cpp \
-        producttypemodel.cpp
+        producttypemodel.cpp \
+        networkerrordialog.cpp \
+        routing.cpp
 
 HEADERS += \
         oildatabasemainwindow.h \
         queryresultmodel.h \
         queryresultsdelegate.h \
         adiosapiqueryurl.h \
-        producttypemodel.h
+        producttypemodel.h \
+        networkerrordialog.h \
+        routing.h
 
 FORMS += \
-        oildatabasemainwindow.ui
+        oildatabasemainwindow.ui \
+        networkerrordialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
