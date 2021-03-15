@@ -84,7 +84,12 @@ void OilDatabaseMainWindow::on_requestButton_clicked()
 void OilDatabaseMainWindow::replyFinished(QNetworkReply* reply) {
     if (reply->error()) {
         qDebug() << "Error in network reply: " << reply->errorString();
-        NetworkErrorDialog *errorDialog = new NetworkErrorDialog(this, Routing::getNetworkReplyType(reply));
+        NetworkErrorDialog *errorDialog = new NetworkErrorDialog (
+            reply->errorString(),
+            Routing::getNetworkReplyType(reply),
+            this
+        );
+
         errorDialog->exec();
         delete errorDialog;
         return;

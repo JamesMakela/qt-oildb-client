@@ -2,26 +2,29 @@
 #include "ui_networkerrordialog.h"
 
 
-NetworkErrorDialog::NetworkErrorDialog(QWidget *parent,
-                                       NetworkReplyType replyType)
+NetworkErrorDialog::NetworkErrorDialog(const QString &errorMessage,
+                                       NetworkReplyType replyType,
+                                       QWidget *parent)
     : QDialog(parent), ui(new Ui::NetworkErrorDialog)
 {
+    QString uriPath;
     ui->setupUi(this);
 
     switch(replyType) {
     case NetworkReplyType::oil:
-        ui->errorMessage->setText("Error: timeout on request /oils");
+        uriPath = "/oils";
         break;
     case NetworkReplyType::label:
-        ui->errorMessage->setText("Error: timeout on request /labels");
+        uriPath = "/labels";
         break;
     case NetworkReplyType::productType:
-        ui->errorMessage->setText("Error: timeout on request /product-types");
+        uriPath = "/product-types";
         break;
     default:
-        ui->errorMessage->setText("Error: timeout on request");
         break;
     }
+    ui->errorMessage->setText(QString("Error: %1 on request %2")
+                              .arg(errorMessage).arg(uriPath));
 }
 
 NetworkErrorDialog::~NetworkErrorDialog()

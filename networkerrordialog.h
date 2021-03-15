@@ -15,8 +15,9 @@ class NetworkErrorDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit NetworkErrorDialog(QWidget *parent = nullptr,
-                                NetworkReplyType replyType = NetworkReplyType::unknown);
+    explicit NetworkErrorDialog(const QString &errorMessage,
+                                NetworkReplyType replyType = NetworkReplyType::unknown,
+                                QWidget *parent = nullptr);
     ~NetworkErrorDialog();
 
 private:
