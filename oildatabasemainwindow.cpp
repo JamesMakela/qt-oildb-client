@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include <QLabel>
+#include <QAction>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkConfiguration>
 #include <QNetworkReply>
@@ -38,7 +39,6 @@ OilDatabaseMainWindow::OilDatabaseMainWindow(QWidget *parent) :
     ui->queryResultsView->setItemDelegate(new QueryResultsDelegate);
 
     productTypeModel = new ProductTypeModel(this);
-    ui->oilTypeListView->setModel(productTypeModel);
 
     queryUrl = new AdiosApiQueryUrl("https://adios-stage.orr.noaa.gov/api/oils/");
 
@@ -49,6 +49,8 @@ OilDatabaseMainWindow::OilDatabaseMainWindow(QWidget *parent) :
     connect(manager, SIGNAL(finished(QNetworkReply*)), this,
             SLOT(replyFinished(QNetworkReply*)));
 
+    productTypeMenu = new QMenu(ui->querySelectionGroup);
+
     setupListControls();
 }
 
@@ -58,6 +60,8 @@ OilDatabaseMainWindow::~OilDatabaseMainWindow()
     delete ui;
     delete manager;
     delete queryModel;
+
+    delete productTypeMenu;
 }
 
 
@@ -171,25 +175,59 @@ void OilDatabaseMainWindow::handleProductTypeReply(QNetworkReply* reply) {
         for (auto idx{0}; idx < productTypes.size(); ++idx) {
             productTypeModel->appendProductType(ProductType{productTypes[idx]});
         }
+
+        // at this point our product type model is loaded.  Build the menu
+        createProductTypeMenuActions();
     }
 }
 
+void OilDatabaseMainWindow::createProductTypeMenuActions() {
+    productTypeMenu->addAction("- None -");
+    ui->productTypeButton->setText("- None -");
+    ui->productTypeButton->resize(ui->productTypeButton->sizeHint().width(),
+                                  ui->productTypeButton->sizeHint().height());
 
-void OilDatabaseMainWindow::on_queryText_textChanged(const QString &text) {
+    for (int i = 0; i < productTypeModel->rowCount(); ++i) {
+        QString type = productTypeModel->data(productTypeModel->index(i),
+                                              Qt::DisplayRole).toString();
+        productTypeMenu->addAction(type);
+    }
+
+    connect(productTypeMenu, SIGNAL(triggered(QAction *)),
+            this, SLOT(on_productTypeMenu_select(QAction *)),
+            Qt::UniqueConnection);
+}
+
+
+void OilDatabaseMainWindow::on_queryText_textChanged(const QString &text)
+{
     queryUrl->setQueryText(text);
 }
+
 
 void OilDatabaseMainWindow::on_apiMinValue_valueChanged(double minApi)
 {
     queryUrl->setMinApi(minApi);
 }
 
+
 void OilDatabaseMainWindow::on_apiMaxValue_valueChanged(double maxApi)
 {
     queryUrl->setMaxApi(maxApi);
 }
 
-void OilDatabaseMainWindow::on_oilTypeListView_clicked(const QModelIndex &index)
+
+void OilDatabaseMainWindow::on_productTypeButton_clicked()
 {
-    queryUrl->setQueryType(productTypeModel->data(index).toString());
+    productTypeMenu->move(ui->productTypeButton->mapToGlobal(QPoint(0, 0)));
+    productTypeMenu->show();
+}
+
+
+void OilDatabaseMainWindow::on_productTypeMenu_select(QAction *selected)
+{
+    ui->productTypeButton->setText(selected->text());
+    ui->productTypeButton->resize(ui->productTypeButton->sizeHint().width(),
+                                  ui->productTypeButton->sizeHint().height());
+    queryUrl->setQueryType(selected->text());
 }

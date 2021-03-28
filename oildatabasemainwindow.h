@@ -20,10 +20,11 @@ class OilDatabaseMainWindow : public QMainWindow
 
 public:
     explicit OilDatabaseMainWindow(QWidget *parent = nullptr);
-    ~OilDatabaseMainWindow();
+    ~OilDatabaseMainWindow() override;
     void setupListControls();
     void handleOilReply(QNetworkReply *reply);
     void handleProductTypeReply(QNetworkReply *reply);
+    void createProductTypeMenuActions();
 
 private slots:
     void on_requestButton_clicked();
@@ -32,7 +33,8 @@ private slots:
     void on_apiMinValue_valueChanged(double arg1);
     void on_apiMaxValue_valueChanged(double arg1);
 
-    void on_oilTypeListView_clicked(const QModelIndex &index);
+    void on_productTypeButton_clicked();
+    void on_productTypeMenu_select(QAction *selected);
 
 private:
     Ui::OilDatabaseMainWindow *ui;
@@ -41,6 +43,8 @@ private:
     ProductTypeModel *productTypeModel;
 
     AdiosApiQueryUrl *queryUrl;
+
+    QMenu *productTypeMenu;
 };
 
 #endif // OILDATABASEMAINWINDOW_H

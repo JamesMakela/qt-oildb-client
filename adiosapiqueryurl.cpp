@@ -39,7 +39,7 @@ QUrl AdiosApiQueryUrl::url()
                            QObject::tr("%1,%2").arg(m_minApi).arg(m_maxApi));
     }
 
-    if (m_queryType.count() > 0) {
+    if (m_queryType.count() > 0 && m_queryType != "- None -") {
         query.addQueryItem(QString("qType"), m_queryType);
     }
 
